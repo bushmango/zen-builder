@@ -5,8 +5,12 @@ var webpack = require("webpack");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 // const webpack = require('webpack')
-var TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+// const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+var TsconfigPathsPlugin = null;
+var awesome_typescript_loader_1 = require("awesome-typescript-loader");
 var _ = require("lodash");
+var useAwesomeTypescriptLoader = true;
+var useReactHotLoader3 = true;
 function createConfig(options) {
     console.log('options');
     _.defaults(options, {
@@ -17,10 +21,14 @@ function createConfig(options) {
     console.log('config', options);
     var entry = ['./client/AppIndex.tsx'];
     if (options.isHot) {
-        entry.unshift('webpack-hot-middleware/client');
+        entry.unshift('webpack-hot-middleware/client?reload=true');
     }
+    if (options.isHot && useReactHotLoader3) {
+        entry.unshift('react-hot-loader/patch');
+    }
+    console.log('entry', entry);
     var config = {
-        entry: ['./client/AppIndex.tsx'],
+        entry: entry,
         output: {
             filename: 'bundle.js',
             //path: __dirname + "/dist",
@@ -44,7 +52,9 @@ function createConfig(options) {
                     template: 'hot-template.html'
                 }),
                 new webpack.NamedModulesPlugin(),
+                new webpack.optimize.OccurrenceOrderPlugin(true),
                 new webpack.HotModuleReplacementPlugin(),
+                new webpack.NoEmitOnErrorsPlugin(),
             ]
             : [
                 // new CleanWebpackPlugin(['dist']),
@@ -52,21 +62,41 @@ function createConfig(options) {
             ],
         resolve: {
             extensions: ['.js', '.ts', '.tsx', '.json'],
-            plugins: [
-                new TsconfigPathsPlugin({
-                    configFile: './tsconfig.json',
-                    logLevel: 'info',
-                    extensions: ['.ts', '.tsx']
-                }),
-            ]
+            plugins: useAwesomeTypescriptLoader
+                ? [
+                    new awesome_typescript_loader_1.TsConfigPathsPlugin({
+                        configFileName: './tsconfig.json'
+                    }),
+                ]
+                : [
+                    new TsconfigPathsPlugin({
+                        configFile: './tsconfig.json',
+                        logLevel: 'info',
+                        extensions: ['.ts', '.tsx']
+                    }),
+                ]
         },
         module: {
             rules: [
                 // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-                {
-                    test: /\.tsx?$/,
-                    loaders: ['ts-loader']
-                },
+                useAwesomeTypescriptLoader
+                    ? {
+                        test: /\.tsx?$/,
+                        exclude: /node_modules/,
+                        use: [
+                            'react-hot-loader/webpack',
+                            {
+                                loader: 'awesome-typescript-loader',
+                                options: {
+                                    useCache: false
+                                }
+                            },
+                        ]
+                    }
+                    : {
+                        test: /\.tsx?$/,
+                        loaders: ['ts-loader']
+                    },
                 // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
                 { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
             ]
