@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "importHelpers": true,
-    "allowSyntheticDefaultImports": true,
+    "allowSyntheticDefaultImports": false,
     "sourceMap": true,
     "noEmit": false,
     "noImplicitAny": false,
