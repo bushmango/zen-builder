@@ -22,7 +22,7 @@ export function createServer(options: {
   port?: number
   title?: string
   webpackConfig: any
-  proxy?: IProxy[]
+  proxy?: IProxy[],
 }) {
   _.defaults(options, {
     port: 3003,
@@ -38,7 +38,7 @@ export function createServer(options: {
 
   const compiler = webpack(options.webpackConfig)
 
-  _.forEach(options.proxy, c => {
+  _.forEach(options.proxy, (c) => {
     console.log(`proxy ${c.in} to ${c.out}`)
     app.use(c.in, proxy({ target: c.out, changeOrigin: true }))
   })
@@ -50,7 +50,7 @@ export function createServer(options: {
     app.use(
       '/public',
       express.static(options.publicDir),
-      serveIndex(options.publicDir, { icons: true })
+      serveIndex(options.publicDir, { icons: true }),
     )
   }
 
@@ -69,13 +69,16 @@ export function createServer(options: {
       let key = '1234'
       res.redirect(
         `/login-iframe-success?username=${encodeURIComponent(
-          username
-        )}&key=${encodeURIComponent(key)}`
+          username,
+        )}&key=${encodeURIComponent(key)}`,
       )
     }
   })
   // // Pass-thru for all routing
-  app.use(history())
+  app.use(history({
+    htmlAcceptHeaders: ['text/html'],
+    disableDotRule: true,
+  }))
 
   // Dev and hot middleware
   app.use(
@@ -85,7 +88,7 @@ export function createServer(options: {
       logLevel: 'warn',
       publicPath: options.webpackConfig.output.publicPath,
       historyApiFallback: true,
-    })
+    }),
   )
 
   app.use(webpackHotMiddleware(compiler))
@@ -100,7 +103,7 @@ export function createServer(options: {
 
   app.listen(options.port, () => {
     console.log(
-      `Hot server ${options.title} listening on port ${options.port}!`
+      `Hot server ${options.title} listening on port ${options.port}!`,
     )
   })
 }
