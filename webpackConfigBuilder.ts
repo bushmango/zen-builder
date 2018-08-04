@@ -21,11 +21,11 @@ export function createConfig(options: {
   isProduction: boolean
   outputPath?: string
 }) {
-  console.log('options')
+  // console.log('options')
 
   _.defaults(options, {
     isProduction: false,
-    outputPath: options.dirName + '/dist',
+    outputPath: path.join(options.dirName, '/dist'),
     isHot: !options.isProduction,
   })
 
@@ -35,7 +35,7 @@ export function createConfig(options: {
   if (options.isHot) {
     entry.unshift('webpack-hot-middleware/client?reload=true')
   }
-  if(options.isHot && useReactHotLoader3) {    
+  if (options.isHot && useReactHotLoader3) {
     entry.unshift('react-hot-loader/patch')
   }
   console.log('entry', entry)
@@ -110,7 +110,7 @@ export function createConfig(options: {
                     useCache: false,
                   },
                 },
-               
+
                 // Hot loader 4
                 // options.isHot ? {
                 //   loader: 'babel-loader',
