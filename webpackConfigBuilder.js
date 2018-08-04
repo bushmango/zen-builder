@@ -12,7 +12,7 @@ var _ = require("lodash");
 var useAwesomeTypescriptLoader = true;
 var useReactHotLoader3 = true;
 function createConfig(options) {
-    console.log('options');
+    // console.log('options')
     _.defaults(options, {
         isProduction: false,
         outputPath: options.dirName + '/dist',
