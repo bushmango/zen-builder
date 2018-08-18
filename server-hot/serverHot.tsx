@@ -38,7 +38,7 @@ export function createServer(options: {
 
   const compiler = webpack(options.webpackConfig)
 
-  _.forEach(options.proxy, c => {
+  _.forEach(options.proxy, (c) => {
     console.log(`proxy ${c.in} to ${c.out}`)
     app.use(c.in, proxy({ target: c.out, changeOrigin: true }))
   })
@@ -58,22 +58,23 @@ export function createServer(options: {
   //   res.send('Hello iframe!')
   // })
 
-  let urlencodedParser = bodyParser.urlencoded({ extended: false })
-  app.post('/login-iframe-check', urlencodedParser, (req, res) => {
-    let { username, password } = req.body
+  // let urlencodedParser = bodyParser.urlencoded({ extended: false })
+  // app.post('/login-iframe-check', urlencodedParser, (req, res) => {
+  //   let { username, password } = req.body
 
-    if (password !== 'password') {
-      res.redirect('/login-iframe?error=wrong-password')
-    } else {
-      //res.send('Hola ' + username + '!')
-      let key = '1234'
-      res.redirect(
-        `/login-iframe-success?username=${encodeURIComponent(
-          username
-        )}&key=${encodeURIComponent(key)}`
-      )
-    }
-  })
+  //   if (password !== 'password') {
+  //     res.redirect('/login-iframe?error=wrong-password')
+  //   } else {
+  //     //res.send('Hola ' + username + '!')
+  //     let key = '1234'
+  //     res.redirect(
+  //       `/login-iframe-success?username=${encodeURIComponent(
+  //         username
+  //       )}&key=${encodeURIComponent(key)}`
+  //     )
+  //   }
+  // })
+
   // // Pass-thru for all routing
   app.use(history())
 

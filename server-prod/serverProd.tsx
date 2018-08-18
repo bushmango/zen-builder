@@ -57,22 +57,22 @@ export function createServer(options: {
   //   res.send('Hello iframe!')
   // })
 
-  let urlencodedParser = bodyParser.urlencoded({ extended: false })
-  app.post('/login-iframe-check', urlencodedParser, (req, res) => {
-    let { username, password } = req.body
+  // let urlencodedParser = bodyParser.urlencoded({ extended: false })
+  // app.post('/login-iframe-check', urlencodedParser, (req, res) => {
+  //   let { username, password } = req.body
 
-    if (password !== 'password') {
-      res.redirect('/login-iframe?error=wrong-password')
-    } else {
-      //res.send('Hola ' + username + '!')
-      let key = '1234'
-      res.redirect(
-        `/login-iframe-success?username=${encodeURIComponent(
-          username
-        )}&key=${encodeURIComponent(key)}`
-      )
-    }
-  })
+  //   if (password !== 'password') {
+  //     res.redirect('/login-iframe?error=wrong-password')
+  //   } else {
+  //     //res.send('Hola ' + username + '!')
+  //     let key = '1234'
+  //     res.redirect(
+  //       `/login-iframe-success?username=${encodeURIComponent(
+  //         username
+  //       )}&key=${encodeURIComponent(key)}`
+  //     )
+  //   }
+  // })
 
   // app.get('/', (req, res) => {
   //   res.send('Hello World!')
