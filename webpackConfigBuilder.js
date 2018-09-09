@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+var path = require("path");
 var webpack = require("webpack");
 // const path = require('path')
 var HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -15,7 +16,7 @@ function createConfig(options) {
     // console.log('options')
     _.defaults(options, {
         isProduction: false,
-        outputPath: options.dirName + '/dist',
+        outputPath: path.join(options.dirName, '/dist'),
         isHot: !options.isProduction
     });
     console.log('config', options);
