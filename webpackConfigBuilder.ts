@@ -15,6 +15,16 @@ import * as _ from 'lodash'
 const useAwesomeTypescriptLoader = true
 const useReactHotLoader3 = true
 
+const externalReact = true
+
+let externals = {}
+if (externalReact) {
+  externals = {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  }
+}
+
 export function createConfig(options: {
   dirName: string
   isHot?: boolean
@@ -139,10 +149,7 @@ export function createConfig(options: {
     // assume a corresponding global variable exists and use that instead.
     // This is important because it allows us to avoid bundling all of our
     // dependencies, which allows browsers to cache those libraries between builds.
-    externals: {
-      //react: "React",
-      //"react-dom": "ReactDOM"
-    },
+    externals: externals,
   }
   return config
 }
