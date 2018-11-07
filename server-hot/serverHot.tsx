@@ -16,12 +16,15 @@ export interface IProxy {
   in: string
   out: string
 }
+
 export function createServer(options: {
   dirName: string
   publicDir?: string
   port?: number
   title?: string
   webpackConfig: any
+  universalRenderingPath?: string
+  universalRenderingFilters?: string[]
   proxy?: IProxy[]
 }) {
   _.defaults(options, {
@@ -75,6 +78,24 @@ export function createServer(options: {
   //   }
   // })
 
+  app.get('/ping', (req, res) => {
+    res.send('pong')
+  })
+
+  // Universal rendering
+  if (options.universalRenderingPath) {
+    _.forEach(options.universalRenderingFilters, (c) => {
+      console.log('universal', c)
+      // app.get(c, (req, res) => {
+      //   res.send('this route will use universal rendering')
+      // })
+      app.use(
+        c,
+        proxy({ target: options.universalRenderingPath, changeOrigin: true })
+      )
+    })
+  }
+
   // // Pass-thru for all routing
   app.use(history())
 
@@ -91,13 +112,9 @@ export function createServer(options: {
 
   app.use(webpackHotMiddleware(compiler))
 
-  app.get('/', (req, res) => {
-    res.send('Hello World!')
-  })
-
-  app.get('/ping', (req, res) => {
-    res.send('pong')
-  })
+  // app.get('/', (req, res) => {
+  //   res.send('Hello World!')
+  // })
 
   app.listen(options.port, () => {
     console.log(
