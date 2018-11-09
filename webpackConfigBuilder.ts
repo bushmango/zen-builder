@@ -6,6 +6,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 // const webpack = require('webpack')
 
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+
 // const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const TsconfigPathsPlugin = null
 import { TsConfigPathsPlugin as TsConfigPathsPluginATL } from 'awesome-typescript-loader'
@@ -14,6 +16,7 @@ import * as _ from 'lodash'
 
 const useAwesomeTypescriptLoader = true
 const useReactHotLoader3 = true
+const useSass = true
 
 const externalReact = true
 
@@ -50,6 +53,57 @@ export function createConfig(options: {
   }
   console.log('entry', entry)
 
+  const rules = []
+
+  if (useSass) {
+    rules.push({
+      test: /\.scss$/,
+      use: [
+        options.isProduction ? MiniCssExtractPlugin.loader : 'style-loader', // creates style nodes from JS strings
+        'css-loader', // translates CSS into CommonJS
+        'sass-loader', // compiles Sass to CSS, using Node Sass by default
+      ],
+    })
+  }
+
+  if (useAwesomeTypescriptLoader) {
+    rules.push({
+      test: /\.tsx?$/,
+      exclude: /node_modules/,
+      use: [
+        'react-hot-loader/webpack',
+        {
+          loader: 'awesome-typescript-loader',
+          options: {
+            useCache: false,
+          },
+        },
+
+        // Hot loader 4
+        // options.isHot ? {
+        //   loader: 'babel-loader',
+        //   options: {
+        //     plugins: [
+        //       '@babel/plugin-syntax-typescript',
+        //       '@babel/plugin-syntax-decorators',
+        //       '@babel/plugin-syntax-jsx',
+        //       'react-hot-loader/babel',
+        //     ],
+        //   },
+        // } : undefined,
+      ],
+    })
+  } else {
+    // use tsloader
+    rules.push({
+      test: /\.tsx?$/,
+      loaders: ['ts-loader'],
+    })
+  }
+
+  // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+  rules.push({ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' })
+
   const config = {
     entry: entry,
     output: {
@@ -85,6 +139,12 @@ export function createConfig(options: {
       : [
           // new CleanWebpackPlugin(['dist']),
           new webpack.NamedModulesPlugin(),
+          new MiniCssExtractPlugin({
+            // Options similar to the same options in webpackOptions.output
+            // both options are optional
+            filename: '[name].css',
+            chunkFilename: '[id].css',
+          }),
         ],
 
     resolve: {
@@ -106,43 +166,7 @@ export function createConfig(options: {
     },
 
     module: {
-      rules: [
-        // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-        useAwesomeTypescriptLoader
-          ? {
-              test: /\.tsx?$/,
-              exclude: /node_modules/,
-              use: [
-                'react-hot-loader/webpack',
-                {
-                  loader: 'awesome-typescript-loader',
-                  options: {
-                    useCache: false,
-                  },
-                },
-
-                // Hot loader 4
-                // options.isHot ? {
-                //   loader: 'babel-loader',
-                //   options: {
-                //     plugins: [
-                //       '@babel/plugin-syntax-typescript',
-                //       '@babel/plugin-syntax-decorators',
-                //       '@babel/plugin-syntax-jsx',
-                //       'react-hot-loader/babel',
-                //     ],
-                //   },
-                // } : undefined,
-              ],
-            }
-          : {
-              test: /\.tsx?$/,
-              loaders: ['ts-loader'],
-            },
-
-        // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-        { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
-      ],
+      rules: rules,
     },
 
     // When importing a module whose path matches one of the following, just
