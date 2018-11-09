@@ -6,12 +6,14 @@ var webpack = require("webpack");
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var CleanWebpackPlugin = require('clean-webpack-plugin');
 // const webpack = require('webpack')
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 var TsconfigPathsPlugin = null;
 var awesome_typescript_loader_1 = require("awesome-typescript-loader");
 var _ = require("lodash");
 var useAwesomeTypescriptLoader = true;
 var useReactHotLoader3 = true;
+var useSass = true;
 var externalReact = true;
 var externals = {};
 if (externalReact) {
@@ -36,6 +38,41 @@ function createConfig(options) {
         entry.unshift('react-hot-loader/patch');
     }
     console.log('entry', entry);
+    var rules = [];
+    if (useSass) {
+        rules.push({
+            test: /\.scss$/,
+            use: [
+                options.isProduction ? MiniCssExtractPlugin.loader : 'style-loader',
+                'css-loader',
+                'sass-loader',
+            ]
+        });
+    }
+    if (useAwesomeTypescriptLoader) {
+        rules.push({
+            test: /\.tsx?$/,
+            exclude: /node_modules/,
+            use: [
+                'react-hot-loader/webpack',
+                {
+                    loader: 'awesome-typescript-loader',
+                    options: {
+                        useCache: false
+                    }
+                },
+            ]
+        });
+    }
+    else {
+        // use tsloader
+        rules.push({
+            test: /\.tsx?$/,
+            loaders: ['ts-loader']
+        });
+    }
+    // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+    rules.push({ enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' });
     var config = {
         entry: entry,
         output: {
@@ -68,6 +105,12 @@ function createConfig(options) {
             : [
                 // new CleanWebpackPlugin(['dist']),
                 new webpack.NamedModulesPlugin(),
+                new MiniCssExtractPlugin({
+                    // Options similar to the same options in webpackOptions.output
+                    // both options are optional
+                    filename: '[name].css',
+                    chunkFilename: '[id].css'
+                }),
             ],
         resolve: {
             extensions: ['.js', '.ts', '.tsx', '.json'],
@@ -86,29 +129,7 @@ function createConfig(options) {
                 ]
         },
         module: {
-            rules: [
-                // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-                useAwesomeTypescriptLoader
-                    ? {
-                        test: /\.tsx?$/,
-                        exclude: /node_modules/,
-                        use: [
-                            'react-hot-loader/webpack',
-                            {
-                                loader: 'awesome-typescript-loader',
-                                options: {
-                                    useCache: false
-                                }
-                            },
-                        ]
-                    }
-                    : {
-                        test: /\.tsx?$/,
-                        loaders: ['ts-loader']
-                    },
-                // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-                { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
-            ]
+            rules: rules
         },
         // When importing a module whose path matches one of the following, just
         // assume a corresponding global variable exists and use that instead.
