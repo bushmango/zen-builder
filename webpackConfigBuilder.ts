@@ -17,6 +17,7 @@ import * as _ from 'lodash'
 const useAwesomeTypescriptLoader = true
 const useReactHotLoader3 = true
 const useSass = true
+const useCss = true
 
 const externalReact = true
 
@@ -55,6 +56,14 @@ export function createConfig(options: {
 
   const rules = []
 
+  if (useCss) {
+    rules.push({
+      test: /\.css$/,
+      use: [
+        'css-loader', // translates CSS into CommonJS
+      ],
+    })
+  }
   if (useSass) {
     rules.push({
       test: /\.scss$/,
