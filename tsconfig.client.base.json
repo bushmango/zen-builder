@@ -1,7 +1,14 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "es5", "scripthost", "es2015.promise", "esnext"],
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise",
+      "es2015.collection",
+      "es2015.iterable"
+    ],
     "outDir": "./dist/",
     "isolatedModules": false,
     "downlevelIteration": true,
@@ -14,7 +21,7 @@
     "sourceMap": true,
     "noEmit": false,
     "noImplicitAny": false,
-    "removeComments": false,
+    "removeComments": true,
     "preserveConstEnums": true,
     "experimentalDecorators": true,
     "noFallthroughCasesInSwitch": true,

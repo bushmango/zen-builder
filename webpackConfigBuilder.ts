@@ -19,6 +19,8 @@ const useReactHotLoader3 = true
 const useSass = true
 const useCss = true
 
+const useIe11Sourcemaps = true
+
 const externalReact = true
 
 let externals = {}
@@ -123,7 +125,11 @@ export function createConfig(options: {
     },
 
     // Enable sourcemaps for debugging webpack's output.
-    devtool: options.isProduction ? 'source-map' : 'eval',
+    devtool: useIe11Sourcemaps
+      ? 'none'
+      : options.isProduction
+      ? 'source-map'
+      : 'eval',
     mode: options.isProduction ? 'production' : 'development',
 
     devServer: options.isHot

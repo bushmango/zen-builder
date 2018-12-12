@@ -14,6 +14,7 @@ var _ = require("lodash");
 var useAwesomeTypescriptLoader = true;
 var useReactHotLoader3 = true;
 var useSass = true;
+var useCss = true;
 var externalReact = true;
 var externals = {};
 if (externalReact) {
@@ -39,6 +40,14 @@ function createConfig(options) {
     }
     console.log('entry', entry);
     var rules = [];
+    if (useCss) {
+        rules.push({
+            test: /\.css$/,
+            use: [
+                'css-loader',
+            ]
+        });
+    }
     if (useSass) {
         rules.push({
             test: /\.scss$/,
@@ -82,7 +91,7 @@ function createConfig(options) {
             publicPath: '/'
         },
         // Enable sourcemaps for debugging webpack's output.
-        devtool: options.isProduction ? 'source-map' : 'eval',
+        devtool: options.isProduction ? 'none' : 'none',
         mode: options.isProduction ? 'production' : 'development',
         devServer: options.isHot
             ? {
